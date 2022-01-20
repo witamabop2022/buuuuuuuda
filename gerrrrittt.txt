@@ -1,9 +1,30 @@
-hakuan kuweka questions ni answers tu
-1) code
-2)code
-and please add comments kama
-#1)
-#i) decision tree model 1
+
+#1i)
+# drop client id
+DATASET <- DATASET[-1]
+
+
+# other factors
+DATASET$Attrition_Flag <- factor(DATASET$Attrition_Flag)
+DATASET$Dependent_count <- factor(DATASET$Dependent_count)
+
+DATASET_norm <- DATASET[,unlist(lapply(DATASET, is.numeric))]
+DATASET_factors <- DATASET[,unlist(lapply(DATASET, is.factor))]
+
+str(DATASET_norm)
+str(DATASET_factors)
+
+# standard normalize function
+## call z-score normalization
+normalize <- function(x){
+  (x - mean(x)) / sqrt(var(x)) 
+}
+# apply normalization
+DATASET_norm <- as.data.frame(lapply(DATASET_norm, normalize))
+
+#bind normalized and factors DATASET
+DATASET <- cbind(DATASET_factors,DATASET_norm)
+
 
 new line added at 13:54
 
