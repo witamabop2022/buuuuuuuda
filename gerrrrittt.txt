@@ -2,7 +2,7 @@
 
 #import data
 #rename dataset
-DATASET <- read.csv("C:/Users/okiki/Desktop/exam/DATASET.csv - DATASET.csv.csv", stringsAsFactors = TRUE)
+DATASET <- read.csv("DATASET.csv - DATASET.csv.csv", stringsAsFactors = TRUE)
 
  
 # 1i)
