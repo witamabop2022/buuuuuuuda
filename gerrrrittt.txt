@@ -1,27 +1,3 @@
-#Question 2
-credit <- read.csv("DATASET.csv",stringsAsFactors = TRUE) # Loading and importing the dataset
-str(credit)
-
-credit <- credit[-1]#Dropping the ICLIENTNUM feature - it's a unique Identification
-credit$Attrition_Flag <- factor(credit$Attrition_Flag,levels = c("0","1")) # making attrition a factor
-
-attach(credit)
-
-## histograms
-hist(Customer_Age)
-hist(Card_Category)
-hist(Total_Relationship_Count)
-hist(Months_on_book)
-## box plots
-boxplot(Customer_Age)
-boxplot(Card_Category)
-boxplot(Total_Relationship_Count)
-boxplot(Months_on_book)
-
-normalize <- function(x) {
-  return((x-min(x))/(max(x)-min(x)))
-} # creating a normalize function
-credit_n <- as.data.frame(lapply(credit[c(-4,-6,-7,-8,-9)], normalize)) # normalizing the data
 
 #1i)
 # drop client id
