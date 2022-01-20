@@ -8,3 +8,37 @@ and please add comments kama
 new line added at 13:54
 
 4
+#Question 4
+Data <- read.csv("DATA.csv", stringsAsFactors = T)
+str(Data)
+#i
+library(psych)
+pairs.panels(Data[c("price","mpg","mileage","year")])
+#price and mpg have -0.6 correlation with a loess smooth sloping downwards and flattens toward the end meaning price goes down with more mpg up to a point.
+#price and mileage have -0.54 correlation with a loes smooth slope downwards and flattens towards the end meaning price goes down with more mileage up to a point.
+#price and year have a 0.59 correlation with a loess smooth sloping upwards and flattens toward the end showing price increases with the year up to a point.
+#mpg and mileage have a 0.4 correlation with a loess smooth slo[ing upwards meaning mpg increases with mileage.
+#mpg and year have -0.35 correlation with a downward sloping loess smooth showing mpg reduces with increase in the year.
+#mileage and year have -0.79 correlation with a sharply downward sloping loess smooth showing a large decrease in mileage with rhe increase in the year.
+
+#ii
+Data_model<- lm(price~ ., data = Data[-1]) 
+summary(Data_model)
+#year, fuelTypeHybrid and engineSize have a positive coefficient meaning they increase price as they increase.
+#transmissionManual, transmissionSemi-Auto, mileage, fuelTypePetrol,tax and mpg have negative coefficients meaning they reduce price as they increase.
+#The model has an R-squared of 0.8016 meaning that 80% of the price is explained by our model.
+
+#iii
+#mpg and mileage have an effect only once mean price is reached
+#Interaction between mpg & engineSize and year & mileage
+Data$mpg2 <- ifelse(Data$price >= mean(Data$price), Data$mpg*1, 0)
+Data$mileage2 <- ifelse(Data$price >= mean(Data$price), Data$mileage*1, 0)
+price~ mpg*engineSize
+price~ year*mileage
+
+Data_model2 <- lm(price~ year+transmission+mileage+fuelType+tax+mpg+engineSize+mpg2+mileage2+mpg*engineSize+year*mileage, data = Data)
+summary(Data_model2)
+#year,transmissionSemi-Auto, mileage, fuelTypeHybrid, mpg, engineSize and mpg2 have a positive coefficient meaning they increase the price.
+#transmissionManual, fueltypePetrol, tax, mileage2, mpg:engineSize and year:mileage have negative coefficients meaning they reduce the price.
+#The model has an R-squared of 0.8492 meaning that 85% of the price is explained by the model.
+#The consultant's advice increased the performance of the model therefore it was valuable.
