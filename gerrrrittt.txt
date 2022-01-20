@@ -1,29 +1,12 @@
-#2
-credit <- read.csv("DATASET.csv",stringsAsFactors = TRUE) # Loading and importing the dataset
-str(credit)
+# 1
 
-credit <- credit[-1]#Dropping the ICLIENTNUM feature - it's a unique Identification
-credit$Attrition_Flag <- factor(credit$Attrition_Flag,levels = c("0","1")) # making attrition a factor
+#import data
+#rename dataset
+DATASET <- read.csv("C:/Users/okiki/Desktop/exam/DATASET.csv - DATASET.csv.csv", stringsAsFactors = TRUE)
 
-attach(credit)
+ 
+# 1i)
 
-## histograms
-hist(Customer_Age)
-hist(Card_Category)
-hist(Total_Relationship_Count)
-hist(Months_on_book)
-## box plots
-boxplot(Customer_Age)
-boxplot(Card_Category)
-boxplot(Total_Relationship_Count)
-boxplot(Months_on_book)
-
-normalize <- function(x) {
-  return((x-min(x))/(max(x)-min(x)))
-} # creating a normalize function
-credit_n <- as.data.frame(lapply(credit[c(-4,-6,-7,-8,-9)], normalize)) # normalizing the data
-
-#1i)
 # drop client id
 DATASET <- DATASET[-1]
 
@@ -49,8 +32,181 @@ DATASET_norm <- as.data.frame(lapply(DATASET_norm, normalize))
 #bind normalized and factors DATASET
 DATASET <- cbind(DATASET_factors,DATASET_norm)
 
+# ----------------ii ---------------
+# stratified random sample
+set.seed(123)
+DATASET_rand <-DATASET[order(runif(10127)),]
 
-new line added at 13:54
+# spliting into 70:30
+0.7*10127
+## = 7088.9
+## = 7089
+
+DATASET_train<-DATASET_rand[(1:7089),]
+DATASET_test<-DATASET_rand[(7090:10127),]
+
+# create features and labels
+
+## -----------iii----------------------
+#implementing C5O
+library(C50)
+model1 <- C5.0(DATASET_train[-1],DATASET_train$Attrition_Flag)
+summary(model1)
+model1_pred<-predict(model1,DATASET_test[-1])
+CrossTable(DATASET_test$Attrition_Flag,  model1_boost_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual', 'predicted '))
+
+# Evaluation on training data (7089 cases):
+  
+# Decision Tree   
+# ----------------  
+#   Size      Errors  
+# 
+# 99  160( 2.3%)   <<
+#   
+#   
+#   (a)   (b)    <-classified as
+# ----  ----
+#   5899    54    (a): class 0
+# 106  1030    (b): class 1
+# 
+# 
+# Attribute usage:
+#   
+#   100.00%	Total_Trans_Ct
+# 94.85%	Total_Trans_Amt
+# 47.13%	Total_Revolving_Bal
+# 43.81%	Total_Relationship_Count
+# 34.93%	Total_Ct_Chng_Q4_Q1
+# 15.49%	Months_Inactive_12_mon
+# 15.32%	Avg_Utilization_Ratio
+# 10.79%	Customer_Age
+# 7.43%	Marital_Status
+# 7.43%	Total_Amt_Chng_Q4_Q1
+# 6.98%	Gender
+# 3.55%	Months_on_book
+# 2.58%	Avg_Open_To_Buy
+# 2.47%	Contacts_Count_12_mon
+# 1.11%	Dependent_count
+# 0.34%	Education_Level
+# 
+# 
+# Time: 0.2 secs
+
+  # | predicted  
+  # actual |         0 |         1 | Row Total | 
+  #   -------------|-----------|-----------|-----------|
+  #   0 |      2514 |        33 |      2547 | 
+  #   |     0.828 |     0.011 |           | 
+  #   -------------|-----------|-----------|-----------|
+  #   1 |        75 |       416 |       491 | 
+  #   |     0.025 |     0.137 |           | 
+  #   -------------|-----------|-----------|-----------|
+  #   Column Total |      2589 |       449 |      3038 | 
+  #   -------------|-----------|-----------|-----------|
+  
+
+##-------------------vi------------------------------
+
+##Boosting the accuracy of decision trees using adaptive boosting
+
+model1_boost <- C5.0(DATASET_train[-1],DATASET_train$Attrition_Flag,
+                     trials = 10)
+model1_boost_pred<-predict(model1_boost,DATASET_test[-1])
+CrossTable(DATASET_test$Attrition_Flag,  model1_boost_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual', 'predicted '))
+
+
+# | predicted  
+# actual |         0 |         1 | Row Total | 
+#   -------------|-----------|-----------|-----------|
+#   0 |      2514 |        33 |      2547 | 
+#   |     0.828 |     0.011 |           | 
+#   -------------|-----------|-----------|-----------|
+#   1 |        75 |       416 |       491 | 
+#   |     0.025 |     0.137 |           | 
+#   -------------|-----------|-----------|-----------|
+#   Column Total |      2589 |       449 |      3038 | 
+#   -------------|-----------|-----------|-----------|
+
+
+## ------------------------v--------------------------
+#Model performance.
+library(caret)
+library(gmodels)
+model1_pred<-predict(model1,DATASET_test[-1])
+confusionMatrix(DATASET_test$Attrition_Flag,  model1_pred,
+                dnn = c('actual ', 'predicted '))
+
+# Confusion Matrix and Statistics
+# 
+# predicted 
+# actual     0    1
+# 0 2478   69
+# 1   95  396
+# 
+# Accuracy : 0.946           
+# 95% CI : (0.9374, 0.9538)
+# No Information Rate : 0.8469          
+# P-Value [Acc > NIR] : < 2e-16         
+# 
+# Kappa : 0.7964          
+# 
+# Mcnemar's Test P-Value : 0.05092         
+#                                           
+#             Sensitivity : 0.9631          
+#             Specificity : 0.8516          
+#          Pos Pred Value : 0.9729          
+#          Neg Pred Value : 0.8065          
+#              Prevalence : 0.8469          
+#          Detection Rate : 0.8157          
+#    Detection Prevalence : 0.8384          
+#       Balanced Accuracy : 0.9073          
+#                                           
+#        'Positive' Class : 0 
+
+#vi) 10 fold cv
+# knn with 10 fold cross validation
+# define control parameter
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)# tune control
+
+model2 <- train(DATASET_train$Attrition_Flag ~ ., data = DATASET_train, method = "C5.0",
+                 trControl=trctrl, tuneLength = 10)
+# predictions
+model2_pred <- predict(object=model2,DATASET_test[,-1])
+
+confusionMatrix(DATASET_test$Attrition_Flag,  model1_pred,
+                dnn = c('actual ', 'predicted '))
+                
+
+#2
+credit <- read.csv("DATASET.csv",stringsAsFactors = TRUE) # Loading and importing the dataset
+str(credit)
+
+credit <- credit[-1]#Dropping the ICLIENTNUM feature - it's a unique Identification
+credit$Attrition_Flag <- factor(credit$Attrition_Flag,levels = c("0","1")) # making attrition a factor
+
+attach(credit)
+
+## histograms
+hist(Customer_Age)
+hist(Card_Category)
+hist(Total_Relationship_Count)
+hist(Months_on_book)
+## box plots
+boxplot(Customer_Age)
+boxplot(Card_Category)
+boxplot(Total_Relationship_Count)
+boxplot(Months_on_book)
+
+normalize <- function(x) {
+  return((x-min(x))/(max(x)-min(x)))
+} # creating a normalize function
+credit_n <- as.data.frame(lapply(credit[c(-4,-6,-7,-8,-9)], normalize)) # normalizing the data
+
+
 
 4
 #Question 4
