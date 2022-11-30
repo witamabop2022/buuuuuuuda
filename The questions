@@ -1,0 +1,32 @@
+#120836 BBS FENG
+## QUESTION ONE (DATASET.csv)
+DATASET <-
+### i) Normalization using z score standardization
+
+### ii) Box plot and Histogram of 4 key variables. Comments
+
+### iii) Stratified random sampling approach (70% training, 30% test)
+
+### iv) Train a c5.0 model on data. Comments. evaluate model performance.
+
+### v) How to improve model in (iii). Implement and comment.
+
+### vi) Using result in (iv) and caret package, create confusion matrix of prediction versus actual values of test dataset.Comment.
+
+### vii) using repeated holdout technique to train model, apply 0.632 bootstrap to train and estimate the recall statistics. implement and comment.
+
+## QUESTION TWO (DATASET.csv)
+### i) Using caret library, train c5.0 model on data and ensure model results will be same regardless of how many times your run the model. run the predict () function and comment
+
+### ii) evaluate model performance, give precision, specificity and sensitivity score from confusion matrix
+
+### iii) apply 3 resampling methods to improve my model and comment on output of each method stating assumptions made.
+
+## QUESTION THREE
+### i) train a knn model and use the mini-max normalization(state any assumptions made when training)
+
+### ii) evaluate model performance and give accuracy score of your model
+
+### iii) Test atleast 5 alternative values of k and draw a table based on your choice of k
+
+### iv) run a neural network with 5 hidden layers, comment on results from resultant confusion matrix & calc precision & recall from it
